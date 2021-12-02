@@ -107,7 +107,7 @@ class UserLoginView(View):
                     messages.add_message(
                         request, messages.SUCCESS, "Welcome to Pepea Health"
                     )
-                    return redirect("core:home")
+                    return redirect("dashboard:home")
                 messages.add_message(
                     request,
                     messages.ERROR,

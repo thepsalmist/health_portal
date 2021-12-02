@@ -6,3 +6,6 @@ class HomeView(View):
     """
     Home dashboard view
     """
+
+    def get(self, request):
+        return render(request, "dashboard/index.html", context={})
