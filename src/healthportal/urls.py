@@ -23,6 +23,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("auth/", include("authentication.urls", namespace="authentication")),
     path("", include("dashboard.urls", namespace="dashboard")),
+    # REST_FRAMEWORK_URLS
+    path("api/dashboard/", include("dashboard.api.urls", namespace="dashboard_api")),
 ]
 
 

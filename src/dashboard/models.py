@@ -1,19 +1,30 @@
 from django.db import models
 
 
-class Location(models.Model):
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class Location(BaseModel):
     """
     Locations in Kenya
     """
 
     name = models.CharField(max_length=256)
 
+    def __str__(self) -> str:
+        return self.name
+
     class Meta:
         verbose_name = "Location"
         verbose_name_plural = "Locations"
 
 
-class HealthFacility(models.Model):
+class HealthFacility(BaseModel):
     """
     Various health facilities
     """
@@ -21,16 +32,43 @@ class HealthFacility(models.Model):
     name = models.CharField(max_length=256)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
+    def __str__(self) -> str:
+        return self.name
+
+    class Meta:
+        verbose_name = "Health Facility"
+        verbose_name_plural = "Health Facilities"
+
     @property
     def total_patients(self):
+        """
+        Returns total registrations
+        """
         return Patient.objects.filter(health_facility=self).count()
 
     @property
-    def total_registrations_by_gender(self, gender):
+    def total_reg_by_gender(self, gender):
+        """
+        Returns total registrations by gender
+        """
         return Patient.objects.filter(health_facility=self, gender=gender).count()
 
+    @property
+    def total_reg_per_month(self, month):
+        """
+        Returns total registrations by month
+        """
+        return Patient.objects.filter(health_facility=self, reg_month=month).count()
 
-class Patient(models.Model):
+    @property
+    def total_reg_by_age(self, age):
+        """
+        Returns total registrations bya age-group
+        """
+        return Patient.objects.filter(health_facility=self, age_group=age).count()
+
+
+class Patient(BaseModel):
     """
     Model Patient data
     """
@@ -77,3 +115,10 @@ class Patient(models.Model):
     reg_month = models.CharField(
         max_length=200, choices=MONTH_CHOICES, default="january"
     )
+
+    def __str__(self) -> str:
+        return self.name
+
+    class Meta:
+        verbose_name = "Patient"
+        verbose_name_plural = "Patients"
