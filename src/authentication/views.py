@@ -8,6 +8,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
 from decouple import config
 
+from .utils import token_generator
 
 User = get_user_model()
 
@@ -64,11 +65,23 @@ class UserRegistrationView(View):
                         + activate_link
                     )
                     sender_email = config("DEFAULT_FROM_EMAIL")
-                    messages.add_message(
-                        request, messages.SUCCESS, "account created successfuly"
+                    email = EmailMessage(
+                        email_subject,
+                        email_body,
+                        sender_email,
+                        [email],
                     )
+                    email.send(fail_silently=False)
 
-        return render(request, "authentication/register.html")
+                    messages.add_message(
+                        request,
+                        messages.SUCCESS,
+                        "account created successfuly, kindly activate your account",
+                    )
+                    return redirect("authentication:activate_page")
+
+        context = {"dataValues": request.POST}
+        return render(request, "authentication/register.html", context)
 
 
 class UserLoginView(View):
@@ -88,4 +101,28 @@ class AccountVerificationView(View):
     Verify user account via email
     """
 
-    pass
+    def get(self, request, uidb64, token):
+        try:
+            id = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=id)
+
+            # check if user is already activated
+            if not token_generator.check_token(user, token):
+                return redirect("authentication:login")
+
+            else:
+                if user.is_active:
+                    return redirect("authentication:login")
+                user.is_active = True
+                user.save()
+                messages.add_message(
+                    request,
+                    messages.SUCCESS,
+                    "Welcome! your account has been activated, proceed to login",
+                )
+                return redirect("authentication:login")
+
+        except Exception as e:
+            pass
+
+        return redirect("authentication:login")
