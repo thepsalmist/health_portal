@@ -1,3 +1,4 @@
+from django.contrib import auth
 from django.shortcuts import redirect, render, reverse
 from django.views.generic import View
 from django.contrib import messages
@@ -93,7 +94,30 @@ class UserLoginView(View):
         return render(request, "authentication/login.html")
 
     def post(self, request):
-        pass
+        username = request.POST["username"]
+        password = request.POST["password"]
+
+        if username and password:
+            user = auth.authenticate(username=username, password=password)
+
+            if user is not None:
+                if user.is_active:
+                    auth.login(request, user)
+                    messages.add_message(
+                        request, messages.SUCCESS, "Welcome to Pepea Health"
+                    )
+                    return redirect("core:home")
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "Your account is not active, check your email to verify your account",
+                )
+                return render(request, "authentication/login.html")
+
+        messages.add_message(
+            request, messages.WARNING, "Invalid credentials, please check again"
+        )
+        return render(request, "authentication/login.html")
 
 
 class AccountVerificationView(View):
@@ -126,3 +150,9 @@ class AccountVerificationView(View):
             pass
 
         return redirect("authentication:login")
+
+
+class UserLogoutView(View):
+    def post(self, request):
+        auth.logout(request)
+        return render(request, "authentication/logout.html", context={})
