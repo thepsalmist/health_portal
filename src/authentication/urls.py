@@ -1,5 +1,10 @@
 from django.urls import path
-from .views import UserRegistrationView, UserLoginView, AccountVerificationView
+from .views import (
+    UserRegistrationView,
+    UserLoginView,
+    AccountVerificationView,
+    ActivatePageView,
+)
 
 app_name = "authentication"
 
@@ -11,4 +16,5 @@ urlpatterns = [
         AccountVerificationView.as_view(),
         name="activate_account",
     ),
+    path("activate_page", ActivatePageView.as_view(), name="activate_page"),
 ]

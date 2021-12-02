@@ -9,6 +9,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
 from decouple import config
 
+from healthportal import settings
 from .utils import token_generator
 
 User = get_user_model()
@@ -65,7 +66,7 @@ class UserRegistrationView(View):
                         + " Welcome to HealthPortal. Use the link below to verify your email address \n"
                         + activate_link
                     )
-                    sender_email = config("DEFAULT_FROM_EMAIL")
+                    sender_email = settings.base.DEFAULT_FROM_EMAIL
                     email = EmailMessage(
                         email_subject,
                         email_body,
@@ -132,6 +133,11 @@ class AccountVerificationView(View):
 
             # check if user is already activated
             if not token_generator.check_token(user, token):
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "The activation link is invalid",
+                )
                 return redirect("authentication:login")
 
             else:
@@ -150,6 +156,11 @@ class AccountVerificationView(View):
             pass
 
         return redirect("authentication:login")
+
+
+class ActivatePageView(View):
+    def get(self, request):
+        return render(request, "authentication/activate_account.html", context={})
 
 
 class UserLogoutView(View):
