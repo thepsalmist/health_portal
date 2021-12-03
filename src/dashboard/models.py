@@ -46,21 +46,18 @@ class HealthFacility(BaseModel):
         """
         return Patient.objects.filter(health_facility=self).count()
 
-    @property
     def total_reg_by_gender(self, gender):
         """
         Returns total registrations by gender
         """
         return Patient.objects.filter(health_facility=self, gender=gender).count()
 
-    @property
     def total_reg_per_month(self, month):
         """
         Returns total registrations by month
         """
         return Patient.objects.filter(health_facility=self, reg_month=month).count()
 
-    @property
     def total_reg_by_age(self, age):
         """
         Returns total registrations bya age-group

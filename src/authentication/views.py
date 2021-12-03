@@ -24,6 +24,7 @@ class UserRegistrationView(View):
         return render(request, "authentication/register.html")
 
     def post(self, request):
+        context = {"dataValues": request.POST}
         # request data
         username = request.POST.get("username")
         email = request.POST.get("email")
@@ -37,6 +38,7 @@ class UserRegistrationView(View):
                     messages.add_message(
                         request, messages.ERROR, "Passwords do not match"
                     )
+                    return render(request, "authentication/register.html", context)
                 else:
                     new_user = User.objects.create_user(username=username, email=email)
                     new_user.set_password(password)
@@ -82,7 +84,6 @@ class UserRegistrationView(View):
                     )
                     return redirect("authentication:activate_page")
 
-        context = {"dataValues": request.POST}
         return render(request, "authentication/register.html", context)
 
 
@@ -95,8 +96,8 @@ class UserLoginView(View):
         return render(request, "authentication/login.html")
 
     def post(self, request):
-        username = request.POST["username"]
-        password = request.POST["password"]
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
         if username and password:
             user = auth.authenticate(username=username, password=password)
@@ -164,6 +165,9 @@ class ActivatePageView(View):
 
 
 class UserLogoutView(View):
+    def get(self, request):
+        return render(request, "authentication/logout.html", context={})
+
     def post(self, request):
         auth.logout(request)
         return render(request, "authentication/logout.html", context={})

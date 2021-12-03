@@ -1,48 +1,43 @@
 {% extends "authentication/base_auth.html" %}
 {% block content %}
-<div class="row mt-5">
-    <div class="col-md-4"></div>
-    <div class="col-md-4">
-        <div class="card mt-5">
+    <div class="splash-container">
+        <div class="card ">
+            <div class="card-header text-center">
+                <h4 class="text-center">
+                    Welcome To Pepea Health! Login
+                </h4>
+                <span class="splash-description">Please enter your user information.</span>
+            </div>
             <div class="card-body">
-                <div class="card-title py-3">
-                    <h4 class="text-center">
-                        Welcome To Pepea Health! Login
-                    </h4>
-                </div>
-
                 <form action="{% url 'authentication:login' %}" method="POST">
                     {% csrf_token %}
-
+    
                     {% include "authentication/messages.html" %}
                     <div class="form-group">
-                        <label for="usernameField">Username</label>
-                        <input type="text" name="username" placeholder="Username" id="usernameField"
-                            value="{{dataValues.username}}" class="form-control">
+                        <input class="form-control form-control-lg" name="username" type="text" placeholder="Username"
+                            value="{{dataValues.username}}" autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="passwordField">Your Password</label>
-                        <input type="password" name="password" placeholder="Please enter your password"
-                            id="passwordField" class="form-control">
+                        <input class="form-control form-control-lg" name="password" type="password" placeholder="Password">
                     </div>
-                    <input type="submit" value="Login" class="btn btn-block btn-primary submit-btn">
+                    <div class="form-group">
+                        <label class="custom-control custom-checkbox">
+                            <input class="custom-control-input" type="checkbox"><span class="custom-control-label">Remember
+                                Me</span>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">Sign in</button>
                 </form>
-                <div class="card-title pt-5">
-                    <p class="text-center">
-                        Are you a new user, Register for a free account today
-                    </p>
-                </div>
-                <a href="{% url 'authentication:register' %}">
-
-                    <input type="submit" value="Sign Up" class="btn btn-block btn-success submit-btn">
-                </a>
-
-
             </div>
-
+            <div class="card-footer bg-white p-0  ">
+                <div class="card-footer-item card-footer-item-bordered">
+                    <a href="{% url 'authentication:register' %}" class="footer-link">Create An Account</a>
+                </div>
+                <div class="card-footer-item card-footer-item-bordered">
+                    <a href="#" class="footer-link">Forgot Password</a>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="col-md-4"></div>
-</div>
-
 {% endblock %}
+
